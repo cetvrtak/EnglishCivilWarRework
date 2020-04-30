@@ -358,6 +358,7 @@ pretender_rebels = {
 		}
 		if = {
 			limit = { has_disaster = english_civil_war }
+			set_country_flag = eng_civil_war_rebels_won
 			country_event = { id = english_civil_war.100 }
 			end_disaster = english_civil_war
 		}

@@ -1,0 +1,7 @@
+knows_nothing_about_civil_war = {
+	local_unrest = -9
+}
+
+learned_about_civil_war = {
+	local_unrest = -7
+}

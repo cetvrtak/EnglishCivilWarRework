@@ -22,6 +22,7 @@ english_civil_war = {
 	can_start = {
 		current_age = age_of_absolutism
 		has_any_disaster = no
+		absolutism = 20
 		OR = {
 			NOT = { stability = 1 }
 			AND = {
@@ -33,8 +34,8 @@ english_civil_war = {
 	
 	
 	can_stop = {
-		stability = 3
 		OR = {
+			NOT = { absolutism = 1 }
 			has_any_disaster = yes
 			NOT = { has_reform = english_monarchy }
 		}
@@ -43,6 +44,20 @@ english_civil_war = {
 	
 	
 	progress = {
+		modifier = {
+			factor = 1
+			absolutism = 30
+			NOT = { absolutism = 40 }
+		} 
+		modifier = {
+			factor = 2
+			absolutism = 40
+			NOT = { absolutism = 50 }
+		} 
+		modifier = {
+			factor = 3
+			absolutism = 50
+		} 
 		modifier = {
 			factor = 1
 			NOT = { legitimacy = 50 }
@@ -96,6 +111,7 @@ english_civil_war = {
 			100 = english_civil_war.8 # The Rebellion in Ireland
 			100 = english_civil_war.9 # The Rebellion in Ireland
 			100 = english_civil_war.10 # Pride's Purge
+			100 = english_civil_war.15 # Overseas learns about the civil war
 		}
 	}
 }
