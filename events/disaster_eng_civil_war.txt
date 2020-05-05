@@ -994,6 +994,7 @@ country_event = {
 			is_overseas = yes
 			likely_rebels = nationalist_rebels
 			NOT = { has_province_modifier = knows_nothing_about_civil_war }
+			NOT = { has_province_modifier = learned_about_civil_war }
 		}
 	}
 	hidden = yes
@@ -1008,6 +1009,7 @@ country_event = {
 				is_overseas = yes
 				likely_rebels = nationalist_rebels
 				NOT = { has_province_modifier = knows_nothing_about_civil_war }
+				NOT = { has_province_modifier = learned_about_civil_war }
 			}
 			add_province_modifier = { 
 				name = knows_nothing_about_civil_war
