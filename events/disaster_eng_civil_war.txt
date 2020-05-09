@@ -704,8 +704,7 @@ country_event = {
 
 	immediate = {
 		hidden_effect = {
-			every_province = {
-				limit = { owner = { NOT = { has_disaster = english_civil_war } } }
+			every_owned_province = {
 				remove_province_modifier = knows_nothing_about_civil_war
 				remove_province_modifier = learned_about_civil_war
 			}
