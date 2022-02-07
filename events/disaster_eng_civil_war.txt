@@ -22,6 +22,21 @@ country_event = {
 	immediate = {
 		hidden_effect = {
 			set_country_flag = eng_civil_war_happened
+			every_country = {
+				limit = {
+					OR = {
+						tag = ROOT
+						junior_union_with = ROOT
+					}
+				}
+				set_country_flag = eng_dominion
+			}
+			every_owned_province = {
+				limit = { has_seat_in_parliament = yes }
+				set_province_flag = member_of_parliament
+			}
+			country_event = { id = english_civil_war.13 days = 1 }	#Rump Parliament
+			country_event = { id = english_civil_war.14 }	#Overseas knows nothing about the civil war
 			add_stability = -3
 			random_owned_province = {
 				limit = {
@@ -38,6 +53,18 @@ country_event = {
 					size = 1
 				}
 			}
+			random_owned_province = {
+				limit = {
+					region = british_isles_region
+					NOT = { area = munster_area }
+					NOT = { area = connacht_area }
+					NOT = { area = leinster_area }
+					NOT = { area = ulster_area }
+					NOT = { units_in_province = 1 }
+					is_capital = no
+				}
+				save_event_target_as = ecw_pretender_prov
+			}
 		}
 	}
 	
@@ -49,15 +76,40 @@ country_event = {
 		remove_country_modifier = eng_court_star_chamber
 		if = {
 			limit = { has_heir = yes }
+			event_target:ecw_pretender_prov = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 3
+					use_heir_as_leader = yes
+				}
+			}
 			hidden_effect = {
 				kill_heir = yes
 			}
 		}
-		change_government = republic
-		add_government_reform = presidential_despot_reform
+		else = {
+			event_target:ecw_pretender_prov = {
+				spawn_rebels = {
+					type = pretender_rebels
+					size = 3
+				}
+			}
+		}
+		every_country = {
+			limit = { has_country_flag = eng_dominion }
+			change_government = republic
+			add_government_reform = presidential_despot_reform
+			hidden_effect = {
+				add_government_reform = republican_authoritarianism_reform
+				add_government_reform = consolidation_of_power_reform
+				add_government_reform = administrative_divisions_reform
+				add_government_reform = parliamentary_reform
+				add_government_reform = broaden_executive_powers_reform
+				add_government_reform = political_principle_reform
+			}
+		}
 		define_ruler = {
-			name = "Oliver"
-			dynasty = Cromwell
+			name = "Oliver Cromwell"
 			MIL = 4
 		}
 		if = {
@@ -67,20 +119,12 @@ country_event = {
 			hidden_effect = { add_ruler_personality = strict_personality }
 		}
 		set_ruler_flag = cromwell_flag
-		random_owned_province = {
+		every_country = {
 			limit = {
-				region = british_isles_region
-				NOT = { area = munster_area }
-				NOT = { area = connacht_area }
-				NOT = { area = leinster_area }
-				NOT = { area = ulster_area }
-				NOT = { units_in_province = 1 }
-				is_capital = no
+				NOT = { tag = ROOT }
+				has_country_flag = eng_dominion
 			}
-			spawn_rebels = {
-				type = pretender_rebels
-				size = 3
-			}
+			ROOT = { create_union = PREV }
 		}
 	}
 	option = {			# Royalists
@@ -657,22 +701,56 @@ country_event = {
 	mean_time_to_happen = {
 		days = 1
 	}
+
+	immediate = {
+		hidden_effect = {
+			every_province = {
+				limit = { owner = { NOT = { has_disaster = english_civil_war } } }
+				remove_province_modifier = knows_nothing_about_civil_war
+				remove_province_modifier = learned_about_civil_war
+			}
+		}
+	}
 		
 	option = {			# Order has finally been restored
 		name = "flavor_eng.EVTOPTA9235"
-		trigger = { has_country_flag = supports_royalists }
-		if = {
-			limit = { NOT = { government = monarchy } }
-			change_government = monarchy
-			add_government_reform = autocracy_reform
-			set_legacy_government = despotic_monarchy
+		trigger = {
+			OR = {
+				AND = {
+					has_country_flag = supports_royalists
+					NOT = { has_country_flag = eng_civil_war_rebels_won }
+				}
+				AND = {
+					has_country_flag = supports_parliamentarians
+					has_country_flag = eng_civil_war_rebels_won
+				}
+			}
 		}
-		if = {
-			limit = { has_reform = english_monarchy }
-			add_government_reform = autocracy_reform
-			set_legacy_government = despotic_monarchy
-		}			
+		every_country = {
+			limit = { has_country_flag = eng_dominion }
+			if = {
+				limit = { NOT = { government = monarchy } }
+				change_government = monarchy
+				add_government_reform = autocracy_reform
+				set_legacy_government = despotic_monarchy
+			}
+			if = {
+				limit = { has_reform = english_monarchy }
+				add_government_reform = autocracy_reform
+				set_legacy_government = despotic_monarchy
+			}
+			if = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { junior_union_with = ROOT }
+				}
+				ROOT = { create_union = PREV }
+			}
+			clr_country_flag = eng_dominion
+		}
 		clr_country_flag = supports_royalists
+		clr_country_flag = supports_parliamentarians
+		clr_country_flag = eng_civil_war_rebels_won
 		add_prestige = 50
 		add_absolutism = 10
 		add_stability = 2
@@ -680,8 +758,21 @@ country_event = {
 	
 	option = {			# Order has finally been restored
 		name = "flavor_eng.EVTOPTB9235"
-		trigger = { has_country_flag = supports_parliamentarians }
+		trigger = {
+			OR = {
+				AND = {
+					has_country_flag = supports_parliamentarians
+					NOT = { has_country_flag = eng_civil_war_rebels_won }
+				}
+				AND = {
+					has_country_flag = supports_royalists
+					has_country_flag = eng_civil_war_rebels_won
+				}
+			}
+		}
+		clr_country_flag = supports_royalists
 		clr_country_flag = supports_parliamentarians
+		clr_country_flag = eng_civil_war_rebels_won
 		add_prestige = 50
 		add_stability = 2
 		if = {
@@ -713,22 +804,44 @@ country_event = {
 	option = {			# A Republic
 		name = "english_civil_war.11.a"
 		ai_chance = { factor = 25 }
-		if = {
-			limit = { NOT = { government = republic } }
-			change_government = republic
+		every_country = {
+			limit = { has_country_flag = eng_dominion }
+			if = {
+				limit = { NOT = { government = republic } }
+				change_government = republic
+			}
+			change_government_reform_progress = 100
+			set_legacy_government = constitutional_republic
+			if = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { junior_union_with = ROOT }
+				}
+				ROOT = { create_union = PREV }
+			}
+			clr_country_flag = eng_dominion
 		}
-		change_government_reform_progress = 100
-		set_legacy_government = constitutional_republic
 	}
 	option = {			# A Monarchy
 		name = "english_civil_war.11.b"
 		ai_chance = { factor = 75 }
-		if = {
-			limit = { NOT = { government = monarchy } }
-			change_government = monarchy
+		every_country = {
+			limit = { has_country_flag = eng_dominion }
+			if = {
+				limit = { NOT = { government = monarchy } }
+				change_government = monarchy
+			}
+			set_legacy_government = constitutional_monarchy
+			if = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { junior_union_with = ROOT }
+				}
+				ROOT = { create_union = PREV }
+			}
+			clr_country_flag = eng_dominion
 		}
 		add_government_reform = english_monarchy
-		set_legacy_government = constitutional_monarchy
 	}
 }
 
@@ -754,21 +867,195 @@ country_event = {
 	option = {			# A Republic
 		name = "english_civil_war.11.a"
 		ai_chance = { factor = 25 }
-		if = {
-			limit = { NOT = { government = republic } }
-			change_government = republic
+		every_country = {
+			limit = { has_country_flag = eng_dominion }
+			if = {
+				limit = { NOT = { government = republic } }
+				change_government = republic
+			}
+			change_government_reform_progress = 100
+			set_legacy_government = constitutional_republic
+			if = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { junior_union_with = ROOT }
+				}
+				ROOT = { create_union = PREV }
+			}
+			clr_country_flag = eng_dominion
 		}
-		change_government_reform_progress = 100
-		set_legacy_government = constitutional_republic
 	}
 	option = {			# A Monarchy
 		name = "english_civil_war.11.b"
 		ai_chance = { factor = 75 }
-		if = {
-			limit = { NOT = { government = monarchy } }
-			change_government = monarchy
+		every_country = {
+			limit = { has_country_flag = eng_dominion }
+			if = {
+				limit = { NOT = { government = monarchy } }
+				change_government = monarchy
+			}
+			set_legacy_government = constitutional_monarchy
+			if = {
+				limit = {
+					NOT = { tag = ROOT }
+					NOT = { junior_union_with = ROOT }
+				}
+				ROOT = { create_union = PREV }
+			}
+			clr_country_flag = eng_dominion
 		}
 		add_government_reform = english_monarchy
-		set_legacy_government = constitutional_monarchy
+	}
+}
+
+#Rump Parliament
+country_event = {
+	id = english_civil_war.13
+	title = none
+	desc = none
+	picture = none
+
+	is_triggered_only = yes
+	trigger = {
+		any_owned_province = {
+			has_province_flag = member_of_parliament
+			has_seat_in_parliament = no
+		}
+	}
+	hidden = yes
+	
+	immediate = {
+		random_owned_province = {
+			limit = {
+				ROOT = { NOT = { current_size_of_parliament = 5 } }
+				has_province_flag = member_of_parliament
+				has_seat_in_parliament = no
+			}
+			set_seat_in_parliament = yes
+			clr_province_flag = member_of_parliament
+		}
+		random_owned_province = {
+			limit = {
+				ROOT = { NOT = { current_size_of_parliament = 5 } }
+				has_province_flag = member_of_parliament
+				has_seat_in_parliament = no
+			}
+			set_seat_in_parliament = yes
+			clr_province_flag = member_of_parliament
+		}
+		random_owned_province = {
+			limit = {
+				ROOT = { NOT = { current_size_of_parliament = 5 } }
+				has_province_flag = member_of_parliament
+				has_seat_in_parliament = no
+			}
+			set_seat_in_parliament = yes
+			clr_province_flag = member_of_parliament
+		}
+		random_owned_province = {
+			limit = {
+				ROOT = { NOT = { current_size_of_parliament = 5 } }
+				has_province_flag = member_of_parliament
+				has_seat_in_parliament = no
+			}
+			set_seat_in_parliament = yes
+			clr_province_flag = member_of_parliament
+		}
+		random_owned_province = {
+			limit = {
+				ROOT = { NOT = { current_size_of_parliament = 5 } }
+				has_province_flag = member_of_parliament
+				has_seat_in_parliament = no
+			}
+			set_seat_in_parliament = yes
+			clr_province_flag = member_of_parliament
+		}
+		every_owned_province = {
+			clr_province_flag = member_of_parliament
+		}
+	}
+	
+	option = {
+	}
+}
+
+#Overseas knows nothing about the civil war
+country_event = {
+	id = english_civil_war.14
+	title = none
+	desc = none
+	picture = none
+
+	trigger = {
+		has_disaster = english_civil_war
+		any_owned_province = {
+			is_overseas = yes
+			likely_rebels = nationalist_rebels
+			NOT = { has_province_modifier = knows_nothing_about_civil_war }
+		}
+	}
+	hidden = yes
+
+	mean_time_to_happen = {
+		days = 1
+	}
+	
+	immediate = {
+		every_owned_province = {
+			limit = {
+				is_overseas = yes
+				likely_rebels = nationalist_rebels
+				NOT = { has_province_modifier = knows_nothing_about_civil_war }
+			}
+			add_province_modifier = { 
+				name = knows_nothing_about_civil_war
+				duration = -1  
+				hidden = yes
+			}
+		}
+	}
+	
+	option = {
+	}
+}
+
+#Overseas learns about the civil war
+province_event = {
+	id = english_civil_war.15
+	title = english_civil_war.15.t
+	desc = english_civil_war.15.d
+	picture = CIVIL_WAR_eventPicture
+
+	is_triggered_only = yes
+
+	trigger = {
+		has_province_modifier = knows_nothing_about_civil_war
+	}
+	
+	immediate = {
+		hidden_effect = {
+			random_owned_province = {
+				limit = {
+					has_province_modifier = knows_nothing_about_civil_war
+				}
+				every_owned_province = {
+					limit = {
+						has_province_modifier = knows_nothing_about_civil_war
+						culture = PREV
+					}
+					remove_province_modifier = knows_nothing_about_civil_war
+					add_province_modifier = { 
+						name = learned_about_civil_war
+						duration = -1  
+						hidden = yes
+					}
+				}
+			}
+		}
+	}
+	
+	option = {
+		name = english_civil_war.15.a
+		custom_tooltip = learned_about_civil_war_tooltip
 	}
 }

@@ -1,0 +1,2 @@
+# Special countries..
+ECW = "countries/English Civil War.txt"

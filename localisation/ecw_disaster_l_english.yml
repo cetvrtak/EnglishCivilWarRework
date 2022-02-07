@@ -1,0 +1,13 @@
+﻿l_english:
+ english_civil_war.11.c:0 "Return of the [ECW.Monarch.Dynasty.GetName]s"
+ ECW:0 "English Civil War"
+ ECW_ADJ:0 "English"
+ english_civil_war.13.t:0 "Rump Parliament"
+ english_civil_war.13.d:0 "The Rump Parliament was the English Parliament after Colonel Thomas Pride purged the Long Parliament, on 6 December 1648, of those members hostile to the Grandees' intention to try King Charles I for high treason."
+ english_civil_war.13.a:0 "Splendid"
+ english_civil_war.15.t:0 "Unrest in [Root.GetName]"
+ english_civil_war.15.d:0 "News about the Civil War have traveled far, causing some unrest among our [Root.Culture.GetName] subjects."
+ english_civil_war.15.a:0 "We'll deal with them later"
+ learned_about_civil_war_tooltip:0 "[Root.Culture.GetName] provinces get §R+2§! unrest"
+ knows_nothing_about_civil_war:0 "English Civil War (overseas)"
+ learned_about_civil_war:0 "English Civil War (overseas)"
